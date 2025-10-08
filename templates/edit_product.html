@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head><title>Редактировать товар</title></head>
+<body>
+    <h1>Редактировать товар</h1>
+    <form method="post" action="/admin/edit/{{ product.id }}">
+        <label>Название: <input type="text" name="name" value="{{ product.name }}"></label><br>
+        <label>Цена: <input type="number" name="price" step="0.01" value="{{ product.price }}"></label><br>
+        <label>Изображение (путь): <input type="text" name="image" value="{{ product.image }}"></label><br>
+        <label>Категория: <input type="text" name="category" value="{{ product.category }}"></label><br>
+        <label>Новинка: <input type="checkbox" name="is_new_arrival" {% if product.is_new_arrival %}checked{% endif %}></label><br>
+        <input type="submit" value="Сохранить">
+    </form>
+</body>
+</html>

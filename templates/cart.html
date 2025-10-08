@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+
+    <!-- Icon -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css"/>
+    <!-- icon -->
+
+    <!-- custom style Sheet & JavaScript -->
+    <link rel="stylesheet" href="css/index.css" />
+    <link rel="stylesheet" href="css/shop.css" />
+    <link rel="stylesheet" href="css/blog.css" />
+    <link rel="stylesheet" href="css/cart.css" />
+    <script src="js/index.js" defer></script>
+    <!-- custom style Sheet & JavaScript -->
+    <title>Ecommerce Website</title>
+    <style>
+      /* Минимальные стили для авторизации, уведомлений и формы подписки */
+      #notification {
+        display: none;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        min-width: 250px;
+        padding: 15px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 1000;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+      }
+      #notification.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      #notification.success {
+        background: #dff0d8;
+        color: #3c763d;
+        border: 1px solid #3c763d;
+      }
+      #notification.error {
+        background: #f2dede;
+        color: #a94442;
+        border: 1px solid #a94442;
+      }
+      #notification-message {
+        display: block;
+        text-align: center;
+      }
+      .form-input {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+        width: 100%;
+      }
+      .form-input:focus {
+        outline: none;
+        border-color: #e63946;
+        box-shadow: 0 0 5px rgba(230, 57, 70, 0.3);
+      }
+      .form-button {
+        padding: 8px;
+        background: #e63946;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+      }
+      .form-button:hover {
+        background: #c62828;
+      }
+      .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .user-initial {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        background: #e63946;
+        color: #fff;
+        border-radius: 50%;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+      }
+      .logout-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #e63946;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+      }
+      .logout-btn:hover {
+        color: #c62828;
+      }
+      .inputField.flex {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #f5f5f5;
+        padding: 5px;
+        border-radius: 4px;
+      }
+      .inputField.flex input {
+        flex: 1;
+        border: none;
+        background: transparent;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+      }
+      .inputField.flex button {
+        padding: 8px 15px;
+        background: #e63946;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 14px;
+      }
+      .inputField.flex button:hover {
+        background: #c62828;
+      }
+      .emails.grid {
+        max-width: 300px;
+      }
+    </style>
+  </head>
+  <body class="home">
+    <div id="notification">
+      <span id="notification-message"></span>
+    </div>
+    <header class="primary-header container flex">
+      <div class="header-inner-one flex">
+        <div class="logo">
+          <img src="image/eso.png" alt="" />
+        </div>
+        <button class="mobile-close-btn" data-visible="false" aria-controls="primary-navigation">
+          <i class="uil uil-times-circle"></i>
+        </button>
+        <nav>
+          <ul id="primary-navigation" data-visible="false" class="primary-navigation flex">
+            <li><a class="fs-100 fs-montserrat bold-500" href="index.html">Home</a></li>
+            <li><a class="fs-100 fs-montserrat bold-500" href="shop.html">Shop</a></li>
+            <li><a class="fs-100 fs-montserrat bold-500" href="about.html">About Us</a></li>
+            <li><a class="fs-100 fs-montserrat bold-500" href="blog.html">Blog</a></li>
+            <li><a class="fs-100 fs-montserrat bold-500" href="contactus.html">Contact Us</a></li>
+            <li><a class="active fs-100 fs-montserrat bold-500" href="cart.html">Cart</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <div class="header-login flex" style="position: relative;">
+        <div id="auth-buttons" style="display: flex; gap: 10px;">
+          <button id="login-toggle" class="fs-100 fs-montserrat bold-500" style="background: none; border: none; cursor: pointer; color: inherit;">
+            Login
+          </button>
+          <button id="signup-toggle" class="fs-100 fs-montserrat bold-500" style="background: none; border: none; cursor: pointer; color: inherit;">
+            Sign Up
+          </button>
+        </div>
+        <div id="user-profile" class="user-profile" style="display: none;">
+          <div id="user-initial" class="user-initial"></div>
+          <button id="logout-btn" class="logout-btn">Logout</button>
+        </div>
+        <div id="login-form-container" style="display: none; position: absolute; top: 40px; right: 0; background: #fff; padding: 15px; width: 300px; z-index: 10; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+          <form id="login-form" action="/login" method="POST" style="display: flex; flex-direction: column; gap: 10px;">
+            <input type="text" name="username" placeholder="Username" required class="form-input" />
+            <input type="password" name="password" placeholder="Password" required class="form-input" />
+            <label style="display: flex; align-items: center; gap: 5px;">
+              <input type="checkbox" name="remember" style="width: 16px; height: 16px;" />
+              <span style="font-family: 'Montserrat', sans-serif; font-size: 14px;">Remember me</span>
+            </label>
+            <a href="/forgot-password.html" style="color: #e63946; text-decoration: none; font-family: 'Montserrat', sans-serif; font-size: 14px; text-align: right;">Forgot password?</a>
+            <button type="submit" class="form-button">Login</button>
+          </form>
+        </div>
+        <div id="signup-form-container" style="display: none; position: absolute; top: 40px; right: 0; background: #fff; padding: 15px; width: 300px; z-index: 10; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+          <form id="signup-form" action="/signup" method="POST" style="display: flex; flex-direction: column; gap: 10px;">
+            <input type="text" name="username" placeholder="Username" required class="form-input" />
+            <input type="email" name="email" placeholder="Email" required class="form-input" />
+            <input type="password" name="password" placeholder="Password" required class="form-input" />
+            <input type="password" name="confirm_password" placeholder="Confirm Password" required class="form-input" />
+            <button type="submit" class="form-button">Sign Up</button>
+          </form>
+          <div style="text-align: center; margin-top: 10px;">
+            <span style="font-family: 'Montserrat', sans-serif; font-size: 14px;">Already have an account? </span>
+            <button id="switch-to-login" style="color: #e63946; text-decoration: none; font-family: 'Montserrat', sans-serif; font-size: 14px; background: none; border: none; cursor: pointer;">Login</button>
+          </div>
+        </div>
+      </div>
+      <div class="mobile-open-btn"><i class="uil uil-align-right"></i></div>
+    </header>
+
+    <!-- ===================Shop Feature Section============================ -->
+
+    <section class="shop-feature bg-gray grid">
+      <div>
+        <p class="fs-montserrat text-black">
+          Home <span aria-hidden="true" class="margin">></span> Cart
+        </p>
+      </div>
+      <h2 class="fs-poppins fs-300 bold-700">Cart</h2>
+    </section>
+
+    <!-- ===============================Cart Section=================== -->
+
+    <section class="table">
+      <table>
+        <thead class="thead fs-poppins text-black bold-700 bg-very-light-gray">
+          <tr>
+            <td></td>
+            <td></td>
+            <td>Product</td>
+            <td>Price</td>
+            <td>Quantity</td>
+            <td>Subtotal</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><i class="uil uil-times"></i></td>
+            <td><i class="uil uil-user-circle"></i></td>
+            <td>Beats</td>
+            <td>$995.00</td>
+            <td><input type="number" min="0" max="10" /></td>
+            <td>$4975.00</td>
+          </tr>
+          <tr>
+            <td><i class="uil uil-times"></i></td>
+            <td><i class="uil uil-user-circle"></i></td>
+            <td>Beats</td>
+            <td>$995.00</td>
+            <td><input type="number" min="0" max="10" /></td>
+            <td>$4975.00</td>
+          </tr>
+          <tr>
+            <td><i class="uil uil-times"></i></td>
+            <td><i class="uil uil-user-circle"></i></td>
+            <td>Beats</td>
+            <td>$995.00</td>
+            <td><input type="number" min="0" max="10" /></td>
+            <td>$4975.00</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="copen-box flex">
+        <div>
+            <input class="copen-input fs-poppins text-black" type="text" placeholder="Coupon code">
+            <button class="cupen-btn fs-poppins bold-700 text-black">Apply coupon</button>
+        </div>
+        <div>
+            <button class="cupen-btn fs-poppins bold-700 text-black">Update cart</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="check-out grid">
+        <div></div>
+        <div>
+            <h3 class="fs-poppins fs-300 text-black bold-700">Cart totals</h3>
+            <table>
+                <thead class="thead fs-poppins text-black bold-700">
+                    <tr>
+                        <td class="bg-very-light-gray">Subtotal</td>
+                        <td>$4,975.00</td>
+                    </tr>
+                </thead>
+                <thead class="thead fs-poppins text-black bold-700">
+                    <tr>
+                        <td class="bg-very-light-gray">Total</td>
+                        <td class="bold-700">$4,975.00</td>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <div class="grid">
+                <button class="fs-poppins text-black bold-800 fs-300 bg-gray">Proceed to checkout</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===============================Cart Section=================== -->
+
+    <footer>
+      <!-- =============Brands================= -->
+      <section class="brands grid">
+        <div><img src="image/br-1.png" alt="" /></div>
+        <div><img src="image/br-2.png" alt="" /></div>
+        <div><img src="image/br-3.png" alt="" /></div>
+        <div><img src="image/br-4.png" alt="" /></div>
+        <div><img src="image/br-5.png" alt="" /></div>
+      </section>
+
+      <!-- =============Footer Menu=================== -->
+      <section class="footer grid">
+        <div class="footer-logo grid">
+          <img src="image/eso.png" alt="" />
+          <p class="fs-montserrat fs-200">
+            There are many variations passages of Lorem Ipsum available, but the
+            majority have
+          </p>
+          <div class="social-media flex">
+            <i class="uil uil-facebook-f"></i>
+            <i class="uil uil-instagram"></i>
+            <i class="uil uil-linkedin"></i>
+            <i class="uil uil-twitter"></i>
+          </div>
+        </div>
+
+        <div class="footer-menu grid">
+          <h3 class="fs-poppins fs-200 bold-800">Quick Links</h3>
+          <ul>
+            <li><a class="fs-montserrat text-black fs-200" href="index.html">Home</a></li>
+            <li><a class="fs-montserrat text-black fs-200" href="about.html">About</a></li>
+            <li><a class="fs-montserrat text-black fs-200" href="shop.html">Shop</a></li>
+            <li><a class="fs-montserrat text-black fs-200" href="contactus.html">Contact</a></li>
+            <li><a class="fs-montserrat text-black fs-200" href="cart.html">Cart</a></li>
+          </ul>
+        </div>
+
+        <div class="contact grid">
+          <h3 class="fs-poppins fs-200 bold-800">Contact</h3>
+          <p class="fs-montserrat">
+            +99 (0) 101 0000 888 Patricia C. Amedee 4401 Waldeck Street
+            Grapevine Nashville, Tx 76051
+          </p>
+        </div>
+
+        <div class="emails grid">
+          <h3 class="fs-poppins fs-200 bold-800">Subscribe To Our Email</h3>
+          <p class="updates fs-poppins fs-300 bold-800">
+            For Latest News & Updates
+          </p>
+          <form id="subscribe-form" class="inputField flex bg-gray">
+            <input type="email" id="subscribe-email" name="email" placeholder="Enter Your Email" class="fs-montserrat bg-gray" required />
+            <button type="submit" class="bg-red text-white fs-poppins fs-50">Subscribe</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="copyRight">
+        <p class="c-font fs-montserrat fs-200">© 2022 eStore. All rights reserved.</p>
+        <p class="fs-montserrat fs-100 text-align p-top">
+          <a href="/privacy-policy.html" style="color: #666; text-decoration: none;">Privacy Policy</a> | 
+          <a href="/terms-conditions.html" style="color: #666; text-decoration: none;">Terms & Conditions</a>
+        </p>
+      </section>
+    </footer>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const loginToggle = document.getElementById('login-toggle');
+        const signupToggle = document.getElementById('signup-toggle');
+        const loginFormContainer = document.getElementById('login-form-container');
+        const signupFormContainer = document.getElementById('signup-form-container');
+        const switchToLogin = document.getElementById('switch-to-login');
+        const notification = document.getElementById('notification');
+        const notificationMessage = document.getElementById('notification-message');
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        const authButtons = document.getElementById('auth-buttons');
+        const userProfile = document.getElementById('user-profile');
+        const userInitial = document.getElementById('user-initial');
+        const logoutBtn = document.getElementById('logout-btn');
+        const subscribeForm = document.getElementById('subscribe-form');
+
+        // Функция для показа уведомлений
+        const showNotification = (message, isSuccess) => {
+          notificationMessage.textContent = message;
+          notification.className = isSuccess ? 'success' : 'error';
+          notification.style.display = 'block';
+          setTimeout(() => {
+            notification.classList.add('show');
+          }, 10);
+          setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+              notification.style.display = 'none';
+            }, 300);
+          }, 3000);
+        };
+
+        // Закрытие всех выпадающих окон
+        const closeAll = () => {
+          loginFormContainer.style.display = 'none';
+          signupFormContainer.style.display = 'none';
+          notification.style.display = 'none';
+          notification.classList.remove('show');
+        };
+
+        // Обновление состояния авторизации
+        const updateAuthState = () => {
+          const username = localStorage.getItem('username');
+          if (username) {
+            authButtons.style.display = 'none';
+            userProfile.style.display = 'flex';
+            userInitial.textContent = username.charAt(0).toUpperCase();
+          } else {
+            authButtons.style.display = 'flex';
+            userProfile.style.display = 'none';
+          }
+        };
+
+        // Валидация формы регистрации
+        const validateSignupForm = (formData) => {
+          const username = formData.get('username');
+          const email = formData.get('email');
+          const password = formData.get('password');
+          const confirmPassword = formData.get('confirm_password');
+          if (!username || username.length < 3) {
+            showNotification('Имя пользователя должно содержать минимум 3 символа', false);
+            return false;
+          }
+          if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            showNotification('Введите корректный email', false);
+            return false;
+          }
+          if (!password || password.length < 6) {
+            showNotification('Пароль должен содержать минимум 6 символов', false);
+            return false;
+          }
+          if (password !== confirmPassword) {
+            showNotification('Пароли не совпадают', false);
+            return false;
+          }
+          return true;
+        };
+
+        // Обработчики событий
+        loginToggle.addEventListener('click', () => {
+          const isVisible = loginFormContainer.style.display === 'block';
+          closeAll();
+          loginFormContainer.style.display = isVisible ? 'none' : 'block';
+        });
+
+        signupToggle.addEventListener('click', () => {
+          const isVisible = signupFormContainer.style.display === 'block';
+          closeAll();
+          signupFormContainer.style.display = isVisible ? 'none' : 'block';
+        });
+
+        switchToLogin.addEventListener('click', () => {
+          closeAll();
+          loginFormContainer.style.display = 'block';
+        });
+
+        logoutBtn.addEventListener('click', () => {
+          localStorage.removeItem('username');
+          updateAuthState();
+          showNotification('Выход выполнен!', true);
+        });
+
+        document.addEventListener('click', (event) => {
+          if (
+            !loginFormContainer.contains(event.target) &&
+            !signupFormContainer.contains(event.target) &&
+            !notification.contains(event.target) &&
+            !userProfile.contains(event.target) &&
+            event.target !== loginToggle &&
+            event.target !== signupToggle &&
+            event.target !== switchToLogin
+          ) {
+            closeAll();
+          }
+        });
+
+        signupForm.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          const formData = new FormData(signupForm);
+          if (!validateSignupForm(formData)) return;
+
+          try {
+            const response = await fetch('http://localhost:8000/signup', {
+              method: 'POST',
+              body: formData,
+            });
+            const result = await response.json();
+            if (result.success) {
+              localStorage.setItem('username', formData.get('username'));
+              updateAuthState();
+              showNotification('Регистрация успешна!', true);
+              signupFormContainer.style.display = 'none';
+              signupForm.reset();
+            } else {
+              showNotification(result.error || 'Ошибка при регистрации', false);
+            }
+          } catch (error) {
+            console.error('Ошибка при регистрации:', error);
+            showNotification('Произошла ошибка при регистрации. Проверьте соединение или попробуйте снова.', false);
+          }
+        });
+
+        loginForm.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          const formData = new FormData(loginForm);
+          const username = formData.get('username').trim();
+          const password = formData.get('password').trim();
+          if (!username || !password) {
+            showNotification('Заполните все поля', false);
+            return;
+          }
+          if (username.length < 3) {
+            showNotification('Имя пользователя должно содержать минимум 3 символа', false);
+            return;
+          }
+
+          try {
+            const response = await fetch('http://localhost:8000/login', {
+              method: 'POST',
+              body: formData,
+            });
+            const result = await response.json();
+            if (result.success) {
+              localStorage.setItem('username', username);
+              updateAuthState();
+              showNotification('Вход выполнен!', true);
+              loginFormContainer.style.display = 'none';
+              loginForm.reset();
+            } else {
+              showNotification(result.error || 'Ошибка при входе', false);
+            }
+          } catch (error) {
+            console.error('Ошибка при входе:', error);
+            showNotification('Произошла ошибка при входе. Проверьте соединение или попробуйте снова.', false);
+          }
+        });
+
+        // Обработчик для формы подписки
+        subscribeForm.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          const formData = new FormData(subscribeForm);
+          const email = formData.get('email').trim();
+
+          if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            showNotification('Введите корректный email', false);
+            return;
+          }
+
+          try {
+            const response = await fetch('http://localhost:8000/subscribe', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email })
+            });
+            const result = await response.json();
+            if (result.success) {
+              showNotification('Подписка успешна! Проверьте email для подтверждения.', true);
+              subscribeForm.reset();
+            } else {
+              const errorMsg = result.detail?.[0]?.msg || result.detail || result.error || 'Ошибка подписки';
+              showNotification(errorMsg, false);
+            }
+          } catch (error) {
+            console.error('Ошибка подписки:', error);
+            showNotification('Произошла ошибка. Попробуйте позже.', false);
+          }
+        });
+
+        // Проверяем состояние авторизации при загрузке
+        updateAuthState();
+      });
+    </script>
+  </body>
+</html>

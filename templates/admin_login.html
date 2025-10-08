@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background: #f9f9f9;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .login-container {
+            background: #fff;
+            max-width: 400px;
+            width: 100%;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin: 50px auto;
+        }
+
+        .login-container h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 20px;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .login-form label {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            font-size: 14px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .login-form input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-top: 5px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .login-form input:focus {
+            border-color: #e63946;
+        }
+
+        .login-form button {
+            background: #e63946;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .login-form button:hover {
+            background: #d32f2f;
+        }
+
+        #notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 5px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+            font-size: 14px;
+        }
+
+        #notification.success {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        #notification.error {
+            background-color: #f44336;
+            color: white;
+        }
+
+        #notification.show {
+            opacity: 1;
+        }
+
+        footer {
+            background: #4d4a4a;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        footer p {
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        footer a {
+            color: #e63946;
+            text-decoration: none;
+            font-size: 14px;
+            margin: 0 10px;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 20px;
+                margin: 20px;
+            }
+
+            .login-container h1 {
+                font-size: 20px;
+            }
+
+            .login-form input, .login-form button {
+                font-size: 14px;
+            }
+
+            footer p, footer a {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>Admin Panel Login</h1>
+        <form id="login-form" class="login-form" method="post" action="/admin/login">
+            <label>
+                Username:
+                <input type="text" name="username" placeholder="Enter username" required>
+            </label>
+            <label>
+                Password:
+                <input type="password" name="password" placeholder="Enter password" required>
+            </label>
+            <button type="submit">Sign In</button>
+        </form>
+    </div>
+    <div id="notification">
+        <span id="notification-message"></span>
+    </div>
+    <footer>
+        <p>&copy; 2022 eStore. All rights reserved.</p>
+        <a href="/privacy-policy">Privacy Policy</a> | <a href="/terms-conditions">Terms & Conditions</a>
+    </footer>
+    <script>
+        function showNotification(message, isSuccess) {
+            const notification = document.getElementById('notification');
+            const notificationMessage = document.getElementById('notification-message');
+            if (!notification || !notificationMessage) {
+                console.error('Notification elements not found');
+                return;
+            }
+            notificationMessage.textContent = message;
+            notification.className = isSuccess ? 'success' : 'error';
+            notification.style.display = 'block';
+            setTimeout(() => notification.classList.add('show'), 10);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.style.display = 'none', 300);
+            }, 3000);
+        }
+
+        document.getElementById('login-form').addEventListener('submit', (event) => {
+            const formData = new FormData(event.target);
+            if (!formData.get('username') || !formData.get('password')) {
+                event.preventDefault();
+                showNotification('Please fill in all fields', false);
+            }
+            // Let backend handle redirect to /admin/dashboard
+        });
+    </script>
+</body>
+</html>

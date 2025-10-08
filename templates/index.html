@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
+    <link rel="stylesheet" href="/css/indexo.css" />
+    <title>eStore - Home</title>
+    <style>
+      /* Встроенные стили для уведомлений и корзины */
+      .new-arrivals { margin: 60px auto; padding: 40px 20px; background: #f9f9f9; border-radius: 12px; }
+      .new-arrivals-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; padding: 20px 0; }
+      .product-box { background: #fff; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); padding: 25px; text-align: center; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+      .product-box:hover { transform: translateY(-8px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+      .product-box img { width: 100%; height: 220px; object-fit: cover; border-radius: 8px; }
+      .product-name { font-size: 20px; margin: 15px 0 8px; color: #222; min-height: 40px; }
+      .price { color: #e63946; font-size: 22px; margin-bottom: 12px; }
+      .detail-btn { padding: 10px 20px; background: #e63946; color: #fff; text-decoration: none; border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 15px; transition: background 0.3s ease; }
+      .detail-btn:hover { background: #c62828; }
+      .product-img { width: 100%; height: 200px; object-fit: cover; border-radius: 10px; }
+      
+      /* Notification, Auth, Cart Styles */
+      #notification { display: none; position: fixed; top: 20px; right: 20px; min-width: 250px; padding: 15px 20px; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); z-index: 1000; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 500; opacity: 0; transform: translateY(-20px); transition: opacity 0.3s ease, transform 0.3s ease; }
+      #notification.show { opacity: 1; transform: translateY(0); }
+      #notification.success { background: #28a745; color: #fff; border: 1px solid #218838; }
+      #notification.error { background: #dc3545; color: #fff; border: 1px solid #c82333; }
+      #notification-message { display: block; text-align: center; }
+      
+      .form-input { padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 14px; width: 100%; transition: border-color 0.2s, box-shadow 0.2s; }
+      .form-input:focus { outline: none; border-color: #e63946; box-shadow: 0 0 5px rgba(230, 57, 70, 0.3); }
+      .form-button { padding: 10px; background: #e63946; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 600; transition: background 0.2s; }
+      .form-button:hover { background: #c62828; }
+      
+      .user-profile { display: flex; align-items: center; gap: 10px; }
+      .user-initial { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: #e63946; color: #fff; border-radius: 50%; font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 600; }
+      .logout-btn { background: none; border: none; cursor: pointer; color: #e63946; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 600; transition: color 0.2s; }
+      .logout-btn:hover { color: #c62828; }
+      
+      .inputField.flex { display: flex; align-items: center; gap: 10px; background: #f5f5f5; padding: 5px; border-radius: 6px; }
+      .inputField.flex input { flex: 1; border: none; background: transparent; font-family: 'Montserrat', sans-serif; font-size: 14px; }
+      .inputField.flex button { padding: 10px 15px; background: #e63946; color: #fff; border: none; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 600; }
+      .inputField.flex button:hover { background: #c62828; }
+      .emails.grid { max-width: 300px; }
+
+      /* --- START: NEW CSS FOR CART MODAL AND OVERLAY --- */
+      #cart-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 999;
+        display: none;
+        transition: opacity 0.3s ease;
+        opacity: 0;
+      }
+      #cart-overlay.visible {
+        opacity: 1;
+        display: block;
+      }
+
+      #cart-icon {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        right: -400px;
+        height: 100%;
+        background: #fff;
+        padding: 20px;
+        width: 400px;
+        box-shadow: -4px 0 15px rgba(0,0,0,0.1);
+        z-index: 1000;
+        font-family: 'Montserrat', sans-serif;
+        transition: right 0.4s ease;
+      }
+      #cart-icon.open {
+        right: 0;
+      }
+
+      /* Adjustments for a full-height cart */
+      .shopping {
+        margin-bottom: 20px;
+      }
+      .cart-items {
+        flex-grow: 1; /* Allows the items list to fill the space */
+        overflow-y: auto; /* Adds a scrollbar for the items list */
+        padding-right: 10px; /* Space for the scrollbar */
+      }
+      .cart-total, .cart-actions {
+        padding: 20px 0 0;
+        border-top: 1px solid #eee;
+        margin-top: 20px;
+      }
+      
+      @media (max-width: 600px) {
+        #cart-icon {
+          width: 100%;
+          max-width: 320px;
+        }
+      }
+      /* --- END: NEW CSS FOR CART MODAL AND OVERLAY --- */
+
+      /* Общие стили для форм, уведомлений и профиля */
+      #notification {
+        display: none;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        min-width: 250px;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        z-index: 1000;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+      }
+      #notification.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      #notification.success {
+        background: #28a745;
+        color: #fff;
+        border: 1px solid #218838;
+      }
+      #notification.error {
+        background: #dc3545;
+        color: #fff;
+        border: 1px solid #c82333;
+      }
+      #notification-message {
+        display: block;
+        text-align: center;
+      }
+      .form-input {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+        width: 100%;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+      .form-input:focus {
+        outline: none;
+        border-color: #e63946;
+        box-shadow: 0 0 5px rgba(230, 57, 70, 0.3);
+      }
+      .form-button {
+        padding: 10px;
+        background: #e63946;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        transition: background 0.2s;
+      }
+      .form-button:hover {
+        background: #c62828;
+      }
+      .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .user-initial {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        background: #e63946;
+        color: #fff;
+        border-radius: 50%;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+      }
+      .logout-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #e63946;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        transition: color 0.2s;
+      }
+      .logout-btn:hover {
+        color: #c62828;
+      }
+      .inputField.flex {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #f5f5f5;
+        padding: 5px;
+        border-radius: 6px;
+      }
+      .inputField.flex input {
+        flex: 1;
+        border: none;
+        background: transparent;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+      }
+      .inputField.flex button {
+        padding: 10px 15px;
+        background: #e63946;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .inputField.flex button:hover {
+        background: #c62828;
+      }
+      .emails.grid {
+        max-width: 300px;
+      }
+
+      /* Стили для корзины */
+      .shopping {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #eee;
+      }
+      .shopping p {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+      }
+      .shopping i {
+        cursor: pointer;
+        font-size: 20px;
+        color: #666;
+        transition: color 0.2s;
+      }
+      .shopping i:hover {
+        color: #e63946;
+      }
+      .cart-items {
+        margin-top: 15px;
+        overflow-y: auto;
+      }
+      .cart-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 12px 0;
+        border-bottom: 1px solid #eee;
+        transition: background 0.2s;
+      }
+      .cart-item:hover {
+        background: #f8f9fa;
+      }
+      .cart-item img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 8px;
+      }
+      .cart-item-details {
+        flex: 1;
+      }
+      .cart-item-details .name {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+        color: #333;
+        margin: 0;
+      }
+      .cart-item-details .price {
+        font-family: 'Montserrat', sans-serif;
+        color: #e63946;
+        font-size: 13px;
+        margin: 5px 0 0;
+      }
+      .cart-item-quantity {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .cart-item-quantity button {
+        padding: 6px 12px;
+        background: #e63946;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        transition: background 0.2s;
+      }
+      .cart-item-quantity button:hover {
+        background: #c62828;
+      }
+      .cart-item-quantity .remove {
+        background: #dc3545;
+      }
+      .cart-item-quantity .remove:hover {
+        background: #c82333;
+      }
+      .cart-item-quantity input {
+        width: 45px;
+        text-align: center;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+        padding: 5px;
+      }
+      .cart-total {
+        margin-top: 15px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+        color: #333;
+        text-align: right;
+      }
+      #cart-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        color: #666;
+      }
+      #cart-empty i {
+        font-size: 40px;
+        margin-bottom: 10px;
+      }
+      #cart-empty p {
+        margin: 0;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 16px;
+      }
+      .cart-actions {
+        margin-top: 15px;
+        text-align: right;
+      }
+      .cart-actions .checkout-btn {
+        padding: 12px 20px;
+        background: #28a745;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: 'Poppins', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        transition: background 0.2s;
+      }
+      .cart-actions .checkout-btn:hover {
+        background: #218838;
+      }
+
+      /* Стили для иконки корзины и счётчика */
+      .cart-wrapper {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+      }
+      #cart-box {
+        font-size: 24px;
+        color: #333;
+        transition: color 0.2s;
+      }
+      #cart-box:hover {
+        color: #e63946;
+      }
+      .cart-count {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #e63946;
+        color: #fff;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        transition: transform 0.2s ease;
+      }
+      .cart-count.updated {
+        transform: scale(1.2);
+      }
+      .cart-count.hidden {
+        display: none;
+      }
+
+      /* Стили для кнопок Add to Cart */
+      .add-to-cart {
+        padding: 10px 16px;
+        background: #e63946;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        transition: background 0.2s, transform 0.1s;
+      }
+      .add-to-cart:hover {
+        background: #c62828;
+        transform: translateY(-2px);
+      }
+      .add-to-cart:active {
+        transform: translateY(0);
+      }
+
+      /* Адаптивность */
+      @media (max-width: 600px) {
+        #cart-icon {
+          width: 100%;
+          max-width: 320px;
+        }
+        .cart-item img {
+          width: 50px;
+          height: 50px;
+        }
+        .cart-item-details .name {
+          font-size: 13px;
+        }
+        .cart-item-details .price {
+          font-size: 12px;
+        }
+        .cart-item-quantity button {
+          padding: 5px 10px;
+          font-size: 13px;
+        }
+        .cart-item-quantity input {
+          width: 40px;
+          font-size: 13px;
+        }
+        .cart-total {
+          font-size: 15px;
+        }
+        .cart-actions .checkout-btn {
+          padding: 10px 16px;
+          font-size: 13px;
+        }
+      }
+    </style>
+  </head>
+  <body class="home">
+    <div id="notification">
+      <span id="notification-message"></span>
+    </div>
+    <header class="primary-header container flex">
+      <div class="header-inner-one flex">
+        <div class="logo">
+          <img src="/image/eso.png" alt="Logo" />
+        </div>
+        <button class="mobile-close-btn" data-visible="false" aria-controls="primary-navigation">
+          <i class="uil uil-times-circle"></i>
+        </button>
+        <nav>
+          <ul id="primary-navigation" data-visible="false" class="primary-navigation flex">
+            <li><a class="active fs-100 fs-montserrat bold-500" href="/index.html">Home</a></li>
+            <li><a class="fs-100 fs-montserrat bold-500" href="/shop.html">Shop</a></li>
+            <li><a class="fs-100 fs-montserrat bold-500" href="/about.html">About Us</a></li>
+            <li><a class="fs-100 fs-montserrat bold-500" href="/blog.html">Blog</a></li>
+            <li><a class="fs-100 fs-montserrat bold-500" href="/contactus.html">Contact Us</a></li>
+          </ul>
+        </nav>
+      </div>
+    <div class="header-login flex">
+        <div id="auth-buttons" style="display: flex; gap: 10px;">
+          <button id="login-toggle" class="fs-100 fs-montserrat bold-500" style="background: none; border: none; cursor: pointer; color: inherit;">Login</button>
+          <button id="signup-toggle" class="fs-100 fs-montserrat bold-500" style="background: none; border: none; cursor: pointer; color: inherit;">Sign Up</button>
+        </div>
+        <div id="user-profile" class="user-profile" style="display: none;">
+          <div id="user-initial" class="user-initial"></div>
+          <button id="logout-btn" class="logout-btn">Logout</button>
+        </div>
+        
+        <div id="login-form-container" style="display: none; position: absolute; top: 50px; right: 0; background: #fff; padding: 20px; width: 320px; z-index: 1000; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);">
+          <form id="login-form" action="/login" method="POST" style="display: flex; flex-direction: column; gap: 12px;">
+            <input type="text" name="username" placeholder="Username" required class="form-input" />
+            <input type="password" name="password" placeholder="Password" required class="form-input" />
+            <label style="display: flex; align-items: center; gap: 5px;">
+              <input type="checkbox" name="remember" style="width: 16px; height: 16px;" />
+              <span style="font-family: 'Montserrat', sans-serif; font-size: 14px;">Remember me</span>
+            </label>
+            <a href="/forgot-password.html" style="color: #e63946; text-decoration: none; font-family: 'Montserrat', sans-serif; font-size: 14px; text-align: right;">Forgot password?</a>
+            <button type="submit" class="form-button">Login</button>
+          </form>
+        </div>
+        
+        <div id="signup-form-container" style="display: none; position: absolute; top: 50px; right: 0; background: #fff; padding: 20px; width: 320px; z-index: 1000; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);">
+          <form id="signup-form" action="/signup" method="POST" style="display: flex; flex-direction: column; gap: 12px;">
+            <input type="text" name="username" placeholder="Username" required class="form-input" />
+            <input type="email" name="email" placeholder="Email" required class="form-input" />
+            <input type="password" name="password" placeholder="Password" required class="form-input" />
+            <input type="password" name="confirm_password" placeholder="Confirm Password" required class="form-input" />
+            <button type="submit" class="form-button">Sign Up</button>
+          </form>
+          <div style="text-align: center; margin-top: 12px;">
+            <span style="font-family: 'Montserrat', sans-serif; font-size: 14px;">Already have an account? </span>
+            <button id="switch-to-login" style="color: #e63946; text-decoration: none; font-family: 'Montserrat', sans-serif; font-size: 14px; background: none; border: none; cursor: pointer;">Login</button>
+          </div>
+        </div>
+        
+        <div class="cart-wrapper">
+          <i id="cart-box" aria-controls="cart-icon" class="uil uil-shopping-cart"></i>
+          <span id="cart-count" class="cart-count hidden">0</span>
+        </div>
+        
+        <div id="cart-icon">
+          <div class="shopping flex">
+            <p>Shopping Basket</p>
+            <i id="cross-btn" class="uil uil-times"></i>
+          </div>
+          <div class="cart-items" id="cart-items"></div>
+          <div class="cart bold-800" id="cart-content">
+            <div class="flex" id="cart-empty" style="display: flex;">
+              <i class="uil uil-shopping-cart-alt"></i>
+              <p>Cart Is Empty</p>
+            </div>
+          </div>
+          <div class="cart-total" id="cart-total">Total: $0.00</div>
+          <div class="cart-actions">
+            <button class="checkout-btn">Proceed to Checkout</button>
+          </div>
+        <div class="mobile-open-btn"><i class="uil uil-align-right"></i></div>
+      </div>
+    </header>
+    <main class="hero-section">
+      <div>
+        <h1 class="fs-200 fs-poppins">
+          Beats Solo
+          <span class="block lineheight fs-300 bold-900 big-wireless fs-poppins">Wireless</span>
+          <span class="text-white fs-900 uppercase lineheight-2 bold-bolder fs-poppins">HeadPhone</span>
+        </h1>
+        <img src="/image/image1.png" alt="Beats Solo Wireless HeadPhone" />
+      </div>
+      <div class="hero-info">
+        <h4 class="fs-montserrat">Description</h4>
+        <p class="fs-montserrat">
+          There are many variations passages of Lorem Ipsum available, but the majority have suffered alteration
+        </p>
+      </div>
+    </main>
+    <section class="product-section">
+      <div class="category bg-black grid">
+        <div>
+          <h3 class="text-white fs-50 fs-montserrat bold">
+            Enjoy <span class="block fs-300 fs-poppins bold">With</span>
+            <span class="earphone uppercase fs-400 fs-montserrat bold-900 lineheight">Earphone</span>
+          </h3>
+          <a href="/shop.html" class="prdduct-btn large-btn text-white bg-red fs-montserrat" style="text-decoration: none; display: inline-block;">
+            Browse
+          </a>
+        </div>
+        <div class="product-img1">
+          <img src="/image/h.png" alt="Earphone" />
+        </div>
+      </div>
+      <div class="category bg-yellow grid">
+        <div>
+          <h3 class="text-white fs-50 fs-montserrat bold">
+            New <span class="block fs-300 fs-poppins bold">Wear</span>
+            <span class="earphone uppercase fs-400 fs-montserrat bold-900 lineheight">Gadget</span>
+          </h3>
+          <a href="/shop.html" class="prdduct-btn large-btn text-white bg-red fs-montserrat" style="text-decoration: none; display: inline-block;">
+            Browse
+          </a>
+        </div>
+        <div class="product-img2">
+          <img src="/image/w.png" alt="Wear Gadget" />
+        </div>
+      </div>
+      <div class="category bg-red grid">
+        <div>
+          <h3 class="text-white fs-50 fs-poppins bold">
+            Trend <span class="block fs-300 fs-poppins bold">Devices</span>
+            <span class="earphone uppercase fs-400 fs-poppins bold-900 lineheight">Laptop</span>
+          </h3>
+          <a href="/shop.html" class="prdduct-btn large-btn text-white bg-red fs-montserrat" style="text-decoration: none; display: inline-block;">
+            Browse
+          </a>
+        </div>
+        <div class="product-img3">
+          <img src="/image/Laptop.png" alt="Laptop" />
+        </div>
+      </div>
+      <div class="category bg-gray grid">
+        <div>
+          <h3 class="text-black fs-50 fs-poppins bold">
+            Best <span class="block fs-300 fs-poppins bold text-black">Gaming</span>
+            <span class="earphone uppercase fs-400 fs-poppins bold-900 lineheight">Console</span>
+          </h3>
+          <a href="/shop.html" class="prdduct-btn large-btn text-white bg-red fs-montserrat" style="text-decoration: none; display: inline-block;">
+            Browse
+          </a>
+        </div>
+        <div class="product-img4">
+          <img src="/image/gam.png" alt="Gaming Console" />
+        </div>
+      </div>
+      <div class="category bg-green grid">
+        <div>
+          <h3 class="text-white fs-50 fs-poppins bold">
+            Play <span class="block fs-300 fs-poppins bold">Game</span>
+            <span class="earphone uppercase fs-400 fs-poppins bold-900 lineheight">Oculus</span>
+          </h3>
+          <a href="/shop.html" class="prdduct-btn large-btn text-white bg-red fs-montserrat" style="text-decoration: none; display: inline-block;">
+            Browse
+          </a>
+        </div>
+        <div class="product-img5">
+          <img src="/image/man2.png" alt="Oculus Game" />
+        </div>
+      </div>
+      <div class="category bg-blue grid">
+        <div>
+          <h3 class="text-white fs-50 fs-poppins bold">
+            New <span class="block fs-300 fs-poppins bold">Amazon</span>
+            <span class="earphone uppercase fs-400 fs-poppins bold-900 lineheight">Speaker</span>
+          </h3>
+          <a href="/shop.html" class="prdduct-btn large-btn text-white bg-red fs-montserrat" style="text-decoration: none; display: inline-block;">
+            Browse
+          </a>
+        </div>
+        <div class="product-img6">
+          <img src="/image/mus.png" alt="Amazon Speaker" />
+        </div>
+      </div>
+    </section>
+    <section class="service-section">
+      <div class="service">
+        <img src="/image/free.svg" alt="Free Shipping" />
+        <div class="service-info">
+          <h3 class="fs-poppins fs-200">Free Shipping</h3>
+          <p class="fs-montserrat fs-50">Free Shipping On All Order</p>
+        </div>
+      </div>
+      <div class="service">
+        <img src="/image/sett.svg" alt="Money Guarantee" />
+        <div class="service-info">
+          <h3 class="fs-poppins fs-200">Money Guarantee</h3>
+          <p class="fs-montserrat fs-50">30 Day Money Back</p>
+        </div>
+      </div>
+      <div class="service">
+        <img src="/image/sup-1.svg" alt="Online Support" />
+        <div class="service-info">
+          <h3 class="fs-poppins fs-200">Online Support</h3>
+          <p class="fs-montserrat fs-50">24/7 Support</p>
+        </div>
+      </div>
+    </section>
+<section class="new-arrivals container">
+    <h2 class="letter-spacing bold-800 fs-poppins">New Arrivals</h2>
+    <div class="new-arrivals-grid" id="new-arrivals-grid">
+        <div class="product-box">
+            <img src="/image/product1.jpg" alt="Product 1" />
+            <p class="product-name">Product 1</p>
+            <p class="price">$99.99</p>
+            <div class="product-details">
+                <button class="add-to-cart" data-id="1" data-name="Product 1" data-price="99.99" data-image="/image/product1.jpg">
+                    <i class="uil uil-shopping-cart-alt"></i> Add to Cart
+                </button>
+            </div>
+        </div>
+        <div class="product-box">
+            <img src="/image/product2.jpg" alt="Product 2" />
+            <p class="product-name">Product 2</p>
+            <p class="price">$149.99</p>
+            <div class="product-details">
+                <button class="add-to-cart" data-id="2" data-name="Product 2" data-price="149.99" data-image="/image/product2.jpg">
+                    <i class="uil uil-shopping-cart-alt"></i> Add to Cart
+                </button>
+            </div>
+        </div>
+        <div class="product-box">
+            <img src="/image/product3.jpg" alt="Product 3" />
+            <p class="product-name">Product 3</p>
+            <p class="price">$79.99</p>
+            <div class="product-details">
+                <button class="add-to-cart" data-id="3" data-name="Product 3" data-price="79.99" data-image="/image/product3.jpg">
+                    <i class="uil uil-shopping-cart-alt"></i> Add to Cart
+                </button>
+            </div>
+        </div>
+        <div class="product-box">
+            <img src="/image/product4.jpg" alt="Product 4" />
+            <p class="product-name">Product 4</p>
+            <p class="price">$199.99</p>
+            <div class="product-details">
+                <button class="add-to-cart" data-id="4" data-name="Product 4" data-price="199.99" data-image="/image/product4.jpg">
+                    <i class="uil uil-shopping-cart-alt"></i> Add to Cart
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+    <footer class="footer-section">
+      <section class="brands grid">
+        <div><img src="/image/br-1.png" alt="Brand 1" /></div>
+        <div><img src="/image/br-2.png" alt="Brand 2" /></div>
+        <div><img src="/image/br-3.png" alt="Brand 3" /></div>
+        <div><img src="/image/br-4.png" alt="Brand 4" /></div>
+        <div><img src="/image/br-5.png" alt="Brand 5" /></div>
+      </section>
+      <section class="footer grid">
+        <div class="footer-logo grid">
+          <img src="/image/eso.png" alt="eStore Logo" />
+          <p class="fs-montserrat fs-200">
+            There are many variations passages of Lorem Ipsum available, but the majority have
+          </p>
+          <div class="social-media flex">
+            <a href="https://facebook.com/yourfacebook" target="_blank"><i class="uil uil-facebook-f"></i></a>
+            <a href="https://instagram.com/yourinstagram" target="_blank"><i class="uil uil-instagram"></i></a>
+            <a href="https://linkedin.com/yourlinkedin" target="_blank"><i class="uil uil-linkedin"></i></a>
+            <a href="https://twitter.com/yourtwitter" target="_blank"><i class="uil uil-twitter"></i></a>
+          </div>
+        </div>
+       <div class="footer-menu grid">
+  <h3 class="fs-poppins fs-200 bold-800">Quick Links</h3>
+  <ul>
+    <li><a class="fs-montserrat text-black fs-200" href="index.html">Home</a></li>
+    <li><a class="fs-montserrat text-black fs-200" href="about.html">About</a></li>
+    <li><a class="fs-montserrat text-black fs-200" href="shop.html">Shop</a></li>
+    <li><a class="fs-montserrat text-black fs-200" href="contactus.html">Contact</a></li>
+  </ul>
+</div>
+        <div class="contact grid">
+          <h3 class="fs-poppins fs-200 bold-800">Contact</h3>
+          <p class="fs-montserrat">
+            +99 (0) 101 0000 888<br />
+            Patricia C. Amedee<br />
+            4401 Waldeck Street<br />
+            Grapevine, Nashville, Tx 76051
+          </p>
+        </div>
+       <div class="emails grid">
+          <h3 class="fs-poppins fs-200 bold-800">Subscribe To Our Email</h3>
+          <p class="updates fs-poppins fs-300 bold-800">For Latest News & Updates</p>
+          <form id="subscribe-form" class="inputField flex bg-gray">
+            <input type="email" id="subscribe-email" name="email" placeholder="Enter Your Email" class="fs-montserrat bg-gray" required />
+            <button type="submit" class="bg-red text-white fs-poppins fs-50">Subscribe</button>
+          </form>
+        </div>
+        </div>
+      </section>
+      <section class="copyRight">
+        <p class="c-font fs-montserrat fs-200">© 2022 eStore. All rights reserved.</p>
+        <p class="fs-montserrat fs-100 text-align p-top">
+          <a href="/privacy-policy.html" style="color: #666; text-decoration: none;">Privacy Policy</a> | 
+          <a href="/terms-conditions.html" style="color: #666; text-decoration: none;">Terms & Conditions</a>
+        </p>
+      </section>
+    </footer>
+    
+    <div class="cart-overlay" id="cart-overlay"></div>
+    <div class="cart-wrapper grid text-black" id="cart-icon">
+      <div class="flex">
+        <p class="fs-poppins bold-800">Shopping Cart</p>
+        <span class="cross-btn" id="cross-btn">&times;</span>
+      </div>
+      <div class="cart-items" id="cart-items" style="display: none;">
+        </div>
+      <div class="cart-empty" id="cart-empty" style="display: none;">
+        <p class="fs-poppins">Your cart is empty</p>
+      </div>
+      <p class="cart-total text-red" id="cart-total" style="display: none;">Total: $0.00</p>
+      <button class="bg-red text-white checkout-btn">Checkout</button>
+    </div>
+
+    <div class="auth-form-container" id="login-form-container" style="display: none;">
+      <form class="auth-form" id="login-form">
+        <label for="login-username">Username</label>
+        <input type="text" id="login-username" name="username" required />
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" name="password" required />
+        <button type="submit">Login</button>
+      </form>
+    </div>
+
+    <div class="auth-form-container" id="signup-form-container" style="display: none;">
+      <form class="auth-form" id="signup-form">
+        <label for="signup-username">Username</label>
+        <input type="text" id="signup-username" name="username" required />
+        <label for="signup-email">Email</label>
+        <input type="email" id="signup-email" name="email" required />
+        <label for="signup-password">Password</label>
+        <input type="password" id="signup-password" name="password" required />
+        <label for="confirm-password">Confirm Password</label>
+        <input type="password" id="confirm-password" name="confirm_password" required />
+        <button type="submit">Sign Up</button>
+        <p class="switch-link">
+          Already have an account? <span id="switch-to-login">Login</span>
+        </p>
+      </form>
+    </div>
+    <script src="/js/indexo.js" defer></script>
+    <script src="/js/shopo.js" defer></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        // This is a minimal version of the product handling, just for the home page
+        // It relies on the addToCart function already loaded from shopo.js
+        const newArrivalsButtons = document.querySelectorAll('.new-arrivals-grid .add-to-cart');
+        newArrivalsButtons.forEach(button => {
+          button.addEventListener('click', () => {
+            const product = {
+              id: button.dataset.id,
+              name: button.dataset.name,
+              price: parseFloat(button.dataset.price),
+              image: button.dataset.image
+            };
+            addToCart(product);
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

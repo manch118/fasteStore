@@ -27,12 +27,12 @@ button{
 }
 
 /* ==========section 2==================== */
-
 .shop-main-container {
   width: 90vw;
   margin-inline: auto;
   margin-block: 2rem;
 }
+
 
 .shop-title {
   justify-content: space-between;
@@ -270,4 +270,17 @@ button{
   text-decoration: none;
 }
 
+
+
 /* ===============SideBar Section-================ */
+.product-list img {
+  display: block;
+  max-width: 100%;
+  max-height: 300px;
+  margin: 5 auto 10px;
+  object-fit: contain;
+  background: #fafafa;
+  border-radius: 8px;
+  padding: 8px;
+}
+

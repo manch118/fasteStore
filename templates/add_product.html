@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head><title>Добавить товар</title></head>
+<body>
+    <h1>Добавить новый товар</h1>
+    <form method="post" action="/admin/add">
+        <label>Название: <input type="text" name="name"></label><br>
+        <label>Цена: <input type="number" name="price" step="0.01"></label><br>
+        <label>Изображение (путь): <input type="text" name="image"></label><br>
+        <label>Категория: <input type="text" name="category"></label><br>
+        <label>Новинка: <input type="checkbox" name="is_new_arrival"></label><br> <!-- Новый чекбокс -->
+        <input type="submit" value="Добавить">
+    </form>
+</body>
+</html>

@@ -1,0 +1,426 @@
+
+
+.blog{
+    margin-block: 5rem;
+
+}
+     /* --- START: NEW CSS FOR CART MODAL AND OVERLAY --- */
+      #cart-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 999;
+        display: none;
+        transition: opacity 0.3s ease;
+        opacity: 0;
+      }
+      #cart-overlay.visible {
+        opacity: 1;
+        display: block;
+      }
+
+      #cart-icon {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        right: -400px;
+        height: 100%;
+        background: #fff;
+        padding: 20px;
+        width: 400px;
+        box-shadow: -4px 0 15px rgba(0,0,0,0.1);
+        z-index: 1000;
+        font-family: 'Montserrat', sans-serif;
+        transition: right 0.4s ease;
+      }
+      #cart-icon.open {
+        right: 0;
+      }
+
+      /* Adjustments for a full-height cart */
+      .shopping {
+        margin-bottom: 20px;
+      }
+      .cart-items {
+        flex-grow: 1; /* Allows the items list to fill the space */
+        overflow-y: auto; /* Adds a scrollbar for the items list */
+        padding-right: 10px; /* Space for the scrollbar */
+      }
+      .cart-total, .cart-actions {
+        padding: 20px 0 0;
+        border-top: 1px solid #eee;
+        margin-top: 20px;
+      }
+      
+      @media (max-width: 600px) {
+        #cart-icon {
+          width: 100%;
+          max-width: 320px;
+        }
+      }
+      /* --- END: NEW CSS FOR CART MODAL AND OVERLAY --- */
+
+      /* Общие стили для форм, уведомлений и профиля */
+      #notification {
+        display: none;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        min-width: 250px;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        z-index: 1000;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+      }
+      #notification.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      #notification.success {
+        background: #28a745;
+        color: #fff;
+        border: 1px solid #218838;
+      }
+      #notification.error {
+        background: #dc3545;
+        color: #fff;
+        border: 1px solid #c82333;
+      }
+      #notification-message {
+        display: block;
+        text-align: center;
+      }
+      .form-input {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+        width: 100%;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+      .form-input:focus {
+        outline: none;
+        border-color: #e63946;
+        box-shadow: 0 0 5px rgba(230, 57, 70, 0.3);
+      }
+      .form-button {
+        padding: 10px;
+        background: #e63946;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        transition: background 0.2s;
+      }
+      .form-button:hover {
+        background: #c62828;
+      }
+      .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .user-initial {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        background: #e63946;
+        color: #fff;
+        border-radius: 50%;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+      }
+      .logout-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #e63946;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        transition: color 0.2s;
+      }
+      .logout-btn:hover {
+        color: #c62828;
+      }
+      .inputField.flex {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #f5f5f5;
+        padding: 5px;
+        border-radius: 6px;
+      }
+      .inputField.flex input {
+        flex: 1;
+        border: none;
+        background: transparent;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+      }
+      .inputField.flex button {
+        padding: 10px 15px;
+        background: #e63946;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .inputField.flex button:hover {
+        background: #c62828;
+      }
+      .emails.grid {
+        max-width: 300px;
+      }
+
+      /* Стили для корзины */
+      .shopping {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #eee;
+      }
+      .shopping p {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+      }
+      .shopping i {
+        cursor: pointer;
+        font-size: 20px;
+        color: #666;
+        transition: color 0.2s;
+      }
+      .shopping i:hover {
+        color: #e63946;
+      }
+      .cart-items {
+        margin-top: 15px;
+        overflow-y: auto;
+      }
+      .cart-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 12px 0;
+        border-bottom: 1px solid #eee;
+        transition: background 0.2s;
+      }
+      .cart-item:hover {
+        background: #f8f9fa;
+      }
+      .cart-item img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 8px;
+      }
+      .cart-item-details {
+        flex: 1;
+      }
+      .cart-item-details .name {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+        color: #333;
+        margin: 0;
+      }
+      .cart-item-details .price {
+        font-family: 'Montserrat', sans-serif;
+        color: #e63946;
+        font-size: 13px;
+        margin: 5px 0 0;
+      }
+      .cart-item-quantity {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .cart-item-quantity button {
+        padding: 6px 12px;
+        background: #e63946;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        transition: background 0.2s;
+      }
+      .cart-item-quantity button:hover {
+        background: #c62828;
+      }
+      .cart-item-quantity .remove {
+        background: #dc3545;
+      }
+      .cart-item-quantity .remove:hover {
+        background: #c82333;
+      }
+      .cart-item-quantity input {
+        width: 45px;
+        text-align: center;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+        padding: 5px;
+      }
+      .cart-total {
+        margin-top: 15px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+        color: #333;
+        text-align: right;
+      }
+      #cart-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        color: #666;
+      }
+      #cart-empty i {
+        font-size: 40px;
+        margin-bottom: 10px;
+      }
+      #cart-empty p {
+        margin: 0;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 16px;
+      }
+      .cart-actions {
+        margin-top: 15px;
+        text-align: right;
+      }
+      .cart-actions .checkout-btn {
+        padding: 12px 20px;
+        background: #28a745;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: 'Poppins', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        transition: background 0.2s;
+      }
+      .cart-actions .checkout-btn:hover {
+        background: #218838;
+      }
+
+      /* Стили для иконки корзины и счётчика */
+      .cart-wrapper {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+      }
+      #cart-box {
+        font-size: 24px;
+        color: #333;
+        transition: color 0.2s;
+      }
+      #cart-box:hover {
+        color: #e63946;
+      }
+      .cart-count {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #e63946;
+        color: #fff;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        transition: transform 0.2s ease;
+      }
+      .cart-count.updated {
+        transform: scale(1.2);
+      }
+      .cart-count.hidden {
+        display: none;
+      }
+
+      /* Стили для кнопок Add to Cart */
+      .add-to-cart {
+        padding: 10px 16px;
+        background: #e63946;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        transition: background 0.2s, transform 0.1s;
+      }
+      .add-to-cart:hover {
+        background: #c62828;
+        transform: translateY(-2px);
+      }
+      .add-to-cart:active {
+        transform: translateY(0);
+      }
+
+      /* Адаптивность */
+      @media (max-width: 600px) {
+        #cart-icon {
+          width: 100%;
+          max-width: 320px;
+        }
+        .cart-item img {
+          width: 50px;
+          height: 50px;
+        }
+        .cart-item-details .name {
+          font-size: 13px;
+        }
+        .cart-item-details .price {
+          font-size: 12px;
+        }
+        .cart-item-quantity button {
+          padding: 5px 10px;
+          font-size: 13px;
+        }
+        .cart-item-quantity input {
+          width: 40px;
+          font-size: 13px;
+        }
+        .cart-total {
+          font-size: 15px;
+        }
+        .cart-actions .checkout-btn {
+          padding: 10px 16px;
+          font-size: 13px;
+        }
+      }

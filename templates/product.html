@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
+    
+    <link rel="stylesheet" href="css/indexo.css" />
+    <link rel="stylesheet" href="css/shop.css" />
+    <link rel="stylesheet" href="css/blog.css" />
+    <link rel="stylesheet" href="css/product.css" />
+    <link rel="stylesheet" href="css/contactus.css" />
+    
+    <style>
+      /* --- START: NEW CSS FOR CART MODAL AND OVERLAY --- */
+      #cart-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 999;
+        display: none;
+        transition: opacity 0.3s ease;
+        opacity: 0;
+      }
+      #cart-overlay.visible {
+        opacity: 1;
+        display: block;
+      }
+
+      #cart-icon {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        right: -400px;
+        height: 100%;
+        background: #fff;
+        padding: 20px;
+        width: 400px;
+        box-shadow: -4px 0 15px rgba(0,0,0,0.1);
+        z-index: 1000;
+        font-family: 'Montserrat', sans-serif;
+        transition: right 0.4s ease;
+      }
+      #cart-icon.open {
+        right: 0;
+      }
+
+      /* Adjustments for a full-height cart */
+      .shopping {
+        margin-bottom: 20px;
+      }
+      .cart-items {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding-right: 10px;
+      }
+      .cart-total, .cart-actions {
+        padding: 20px 0 0;
+        border-top: 1px solid #eee;
+        margin-top: 20px;
+      }
+      
+      @media (max-width: 600px) {
+        #cart-icon {
+          width: 100%;
+          max-width: 320px;
+        }
+      }
+      /* --- END: NEW CSS FOR CART MODAL AND OVERLAY --- */
+
+      /* Общие стили для форм, уведомлений и профиля */
+      #notification {
+        display: none;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        min-width: 250px;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        z-index: 1000;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+      }
+      #notification.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      #notification.success {
+        background: #28a745;
+        color: #fff;
+        border: 1px solid #218838;
+      }
+      #notification.error {
+        background: #dc3545;
+        color: #fff;
+        border: 1px solid #c82333;
+      }
+      #notification-message {
+        display: block;
+        text-align: center;
+      }
+      .form-input {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+        width: 100%;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+      .form-input:focus {
+        outline: none;
+        border-color: #e63946;
+        box-shadow: 0 0 5px rgba(230, 57, 70, 0.3);
+      }
+      .form-button {
+        padding: 10px;
+        background: #e63946;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        transition: background 0.2s;
+      }
+      .form-button:hover {
+        background: #c62828;
+      }
+      .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .user-initial {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        background: #e63946;
+        color: #fff;
+        border-radius: 50%;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+      }
+      .logout-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #e63946;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        transition: color 0.2s;
+      }
+      .logout-btn:hover {
+        color: #c62828;
+      }
+      .inputField.flex {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #f5f5f5;
+        padding: 5px;
+        border-radius: 6px;
+      }
+      .inputField.flex input {
+        flex: 1;
+        border: none;
+        background: transparent;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+      }
+      .inputField.flex button {
+        padding: 10px 15px;
+        background: #e63946;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .inputField.flex button:hover {
+        background: #c62828;
+      }
+      .emails.grid {
+        max-width: 300px;
+      }
+
+      /* Стили для корзины */
+      .shopping {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #eee;
+      }
+      .shopping p {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+      }
+      .shopping i {
+        cursor: pointer;
+        font-size: 20px;
+        color: #666;
+        transition: color 0.2s;
+      }
+      .shopping i:hover {
+        color: #e63946;
+      }
+      .cart-items {
+        margin-top: 15px;
+        overflow-y: auto;
+      }
+      .cart-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 12px 0;
+        border-bottom: 1px solid #eee;
+        transition: background 0.2s;
+      }
+      .cart-item:hover {
+        background: #f8f9fa;
+      }
+      .cart-item img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 8px;
+      }
+      .cart-item-details {
+        flex: 1;
+      }
+      .cart-item-details .name {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+        color: #333;
+        margin: 0;
+      }
+      .cart-item-details .price {
+        font-family: 'Montserrat', sans-serif;
+        color: #e63946;
+        font-size: 13px;
+        margin: 5px 0 0;
+      }
+      .cart-item-quantity {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .cart-item-quantity button {
+        padding: 6px 12px;
+        background: #e63946;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        transition: background 0.2s;
+      }
+      .cart-item-quantity button:hover {
+        background: #c62828;
+      }
+      .cart-item-quantity .remove {
+        background: #dc3545;
+      }
+      .cart-item-quantity .remove:hover {
+        background: #c82333;
+      }
+      .cart-item-quantity input {
+        width: 45px;
+        text-align: center;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+        padding: 5px;
+      }
+      .cart-total {
+        margin-top: 15px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+        color: #333;
+        text-align: right;
+      }
+      #cart-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        color: #666;
+      }
+      #cart-empty i {
+        font-size: 40px;
+        margin-bottom: 10px;
+      }
+      #cart-empty p {
+        margin: 0;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 16px;
+      }
+      .cart-actions {
+        margin-top: 15px;
+        text-align: right;
+      }
+      .cart-actions .checkout-btn {
+        padding: 12px 20px;
+        background: #28a745;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: 'Poppins', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        transition: background 0.2s;
+      }
+      .cart-actions .checkout-btn:hover {
+        background: #218838;
+      }
+
+      /* Стили для иконки корзины и счётчика */
+      .cart-wrapper {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+      }
+      #cart-box {
+        font-size: 24px;
+        color: #333;
+        transition: color 0.2s;
+      }
+      #cart-box:hover {
+        color: #e63946;
+      }
+      .cart-count {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #e63946;
+        color: #fff;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        transition: transform 0.2s ease;
+      }
+      .cart-count.updated {
+        transform: scale(1.2);
+      }
+      .cart-count.hidden {
+        display: none;
+      }
+
+      /* Стили для кнопок Add to Cart */
+      .add-to-cart {
+        padding: 10px 16px;
+        background: #e63946;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        transition: background 0.2s, transform 0.1s;
+      }
+      .add-to-cart:hover {
+        background: #c62828;
+        transform: translateY(-2px);
+      }
+      .add-to-cart:active {
+        transform: translateY(0);
+      }
+
+      /* Адаптивность */
+      @media (max-width: 600px) {
+        #cart-icon {
+          width: 100%;
+          max-width: 320px;
+        }
+        .cart-item img {
+          width: 50px;
+          height: 50px;
+        }
+        .cart-item-details .name {
+          font-size: 13px;
+        }
+        .cart-item-details .price {
+          font-size: 12px;
+        }
+        .cart-item-quantity button {
+          padding: 5px 10px;
+          font-size: 13px;
+        }
+        .cart-item-quantity input {
+          width: 40px;
+          font-size: 13px;
+        }
+        .cart-total {
+          font-size: 15px;
+        }
+        .cart-actions .checkout-btn {
+          padding: 10px 16px;
+          font-size: 13px;
+        }
+      }
+
+      /* Адаптивность */
+      @media (max-width: 1000px) {
+          .new-arrivals-grid {
+              grid-template-columns: repeat(2, 1fr);
+          }
+      }
+
+      @media (max-width: 500px) {
+          .new-arrivals-grid {
+              grid-template-columns: 1fr;
+          }
+      }
+
+      .social-media {
+          gap: 15px;
+      }
+
+      .social-media a {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          background-color: #e63946;
+          color: #fff;
+          border-radius: 50%;
+          transition: background-color 0.3s ease, transform 0.3s ease;
+      }
+
+      .social-media a:hover {
+          background-color: #c62828;
+          transform: translateY(-5px);
+      }
+
+      .social-media i {
+          font-size: 20px;
+      }
+    </style>
+    
+<script src="js/indexo.js" defer></script>
+<script src="js/shopo.js" defer></script>
+<script>
+window.addEventListener('load', () => {
+  console.log('Product page: All scripts loaded');
+  
+  const checkShopReady = setInterval(() => {
+    if (typeof addToCart !== 'undefined' && typeof updateAuthState !== 'undefined' && typeof loadCart !== 'undefined') {
+      clearInterval(checkShopReady);
+      initProductPage();
+    }
+  }, 50);
+  
+  setTimeout(() => {
+    clearInterval(checkShopReady);
+    if (typeof addToCart === 'undefined') {
+      console.error('shopo.js functions not loaded after 5 seconds');
+    }
+  }, 5000);
+});
+
+function initProductPage() {
+  console.log('Initializing product page');
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  const productIdStr = urlParams.get('id');
+  const productId = parseInt(productIdStr);
+
+  console.log('Product ID from URL:', productId);
+
+  if (!productId || isNaN(productId)) {
+    const singleProduct = document.querySelector('.single-product');
+    if (singleProduct) {
+      singleProduct.innerHTML = '<div style="text-align: center; padding: 50px;"><p style="font-size: 18px; color: #dc3545;">ID товара не найден. <a href="shop.html" style="color: #e63946;">Вернуться в магазин</a></p></div>';
+    }
+    return;
+  }
+
+  const singleProduct = document.querySelector('.single-product');
+  if (singleProduct) {
+    singleProduct.innerHTML = '<div style="text-align: center; padding: 50px;"><p style="font-family: Montserrat; color: #666;">Загрузка товара...</p></div>';
+  }
+
+  fetch(`/api/products/${productId}`)
+    .then(response => {
+      console.log('API Response status:', response.status);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('Product data received:', data);
+      
+      if (!data.success || !data.data) {
+        throw new Error('Invalid API response');
+      }
+
+      const product = data.data;
+      
+      if (singleProduct) {
+        singleProduct.innerHTML = `
+          <div id="product-image-container">
+            <img src="${product.image}" alt="${product.name}" class="product-image" style="width: 100%; height: auto; border-radius: 12px;" />
+          </div>
+          <div class="product-info grid">
+            <div class="back-link">
+              <a href="shop.html" class="fs-poppins fs-200 text-black bold-700">
+                <i class="uil uil-arrow-left"></i> Back
+              </a>
+            </div>
+            <h1 class="fs-poppins fs-400 bold-900">${product.name}</h1>
+            <div class="star-icon flex">
+              <div>
+                <i class="uil text-red uil-star"></i>
+                <i class="uil text-red uil-star"></i>
+                <i class="uil text-red uil-star"></i>
+                <i class="uil text-red uil-star"></i>
+                <i class="uil uil-star"></i>
+              </div>
+              <div>
+                <p class="fs-montserrat fs-100">(1 customer review)</p>
+              </div>
+            </div>
+            <div class="price">
+              <p class="bold-700 fs-poppins fs-300">$${parseFloat(product.price).toFixed(2)}</p>
+            </div>
+            <div>
+              <p class="fs-montserrat lineheight">${product.description || 'No description available'}</p>
+            </div>
+            <div class="product-add-cart flex">
+              <input type="number" min="1" max="10" value="1" class="bg-gray fs-poppins" id="quantity-input" />
+              <button id="add-to-cart-btn" class="product-btn large-btn bg-red text-white fs-poppins fs-50">
+                Add to cart
+              </button>
+            </div>
+            <div>
+              <p class="fs-montserrat text-red">
+                <span class="text-black">Category: </span>${product.category || 'Uncategorized'}
+              </p>
+            </div>
+          </div>
+        `;
+
+        const addBtn = document.getElementById('add-to-cart-btn');
+        if (addBtn) {
+          addBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('Add to cart button clicked');
+            
+            const qtyInput = document.getElementById('quantity-input');
+            const qty = parseInt(qtyInput.value) || 1;
+            
+            // КРИТИЧНО: используем точно такой же формат, как в shop.html
+            // В shop.html кнопки имеют data-атрибуты и передают именно id, а не product_id
+            const productForCart = {
+              id: String(productId),  // ← Конвертируем в строку, как из data-id
+              name: product.name,
+              price: String(product.price),  // ← Конвертируем в строку, как из data-price
+              image: product.image,
+              quantity: qty
+            };
+            
+            console.log('Calling addToCart with:', productForCart);
+            console.log('Type check:', {
+              id: typeof productForCart.id,
+              name: typeof productForCart.name,
+              price: typeof productForCart.price,
+              image: typeof productForCart.image,
+              quantity: typeof productForCart.quantity
+            });
+            
+            if (typeof addToCart === 'function') {
+              addToCart(productForCart);
+            } else {
+              console.error('addToCart function not available');
+              alert('Ошибка: функция корзины не загружена');
+            }
+          });
+        }
+      }
+      
+      const fullDesc = document.getElementById('product-full-description');
+      if (fullDesc) {
+        fullDesc.textContent = product.description || 'No description available';
+      }
+      
+      if (typeof updateAuthState === 'function') {
+        updateAuthState();
+      }
+    })
+    .catch(error => {
+      console.error('Error loading product:', error);
+      if (singleProduct) {
+        singleProduct.innerHTML = `
+          <div style="text-align: center; padding: 50px;">
+            <p style="font-size: 18px; color: #dc3545;">
+              Ошибка загрузки товара: ${error.message}
+              <br><br>
+              <a href="shop.html" style="color: #e63946; text-decoration: underline;">Вернуться в магазин</a>
+            </p>
+          </div>
+        `;
+      }
+    });
+
+  const disTab = document.getElementById('dis-tab');
+  const revTab = document.getElementById('rev-tab');
+  const description = document.querySelector('.description');
+  const reviewsContainer = document.querySelector('.reviews-container');
+
+  if (description) description.style.display = 'block';
+  if (reviewsContainer) reviewsContainer.style.display = 'none';
+
+  if (disTab) {
+    disTab.addEventListener('click', (e) => {
+      e.preventDefault();
+      disTab.classList.add('active-tab');
+      if (revTab) revTab.classList.remove('active-tab');
+      if (description) description.style.display = 'block';
+      if (reviewsContainer) reviewsContainer.style.display = 'none';
+    });
+  }
+
+  if (revTab) {
+    revTab.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (disTab) disTab.classList.remove('active-tab');
+      revTab.classList.add('active-tab');
+      if (description) description.style.display = 'none';
+      if (reviewsContainer) reviewsContainer.style.display = 'block';
+    });
+  }
+
+  if (typeof loadCart === 'function') {
+    loadCart();
+  }
+}
+</script>
+    <title>Ecommerce Website</title>
+  </head>
+  <body class="home">
+    <!-- Всё остальное HTML без изменений (header, main, footer) -->
+    <div id="notification">
+      <span id="notification-message"></span>
+    </div>
+
+    <div id="cart-overlay"></div>
+
+    <header class="primary-header container flex">
+      <div class="header-inner-one flex">
+        <div class="logo">
+          <img src="image/eso.png" alt="New Logo" />
+        </div>
+        <button class="mobile-close-btn" data-visible="false" aria-controls="primary-navigation">
+          <i class="uil uil-times-circle"></i>
+        </button>
+        <nav>
+          <ul id="primary-navigation" data-visible="false" class="primary-navigation flex">
+            <li><a class="fs-100 fs-montserrat bold-500" href="index.html">Home</a></li>
+            <li><a class="active fs-100 fs-montserrat bold-500" href="shop.html">Shop</a></li>
+            <li><a class="fs-100 fs-montserrat bold-500" href="about.html">About Us</a></li>
+            <li><a class="fs-100 fs-montserrat bold-500" href="blog.html">Blog</a></li>
+            <li><a class="fs-100 fs-montserrat bold-500" href="contactus.html">Contact Us</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <div class="header-login flex">
+        <div id="auth-buttons" style="display: flex; gap: 10px;">
+          <button id="login-toggle" class="fs-100 fs-montserrat bold-500" style="background: none; border: none; cursor: pointer; color: inherit;">Login</button>
+          <button id="signup-toggle" class="fs-100 fs-montserrat bold-500" style="background: none; border: none; cursor: pointer; color: inherit;">Sign Up</button>
+        </div>
+        <div id="user-profile" class="user-profile" style="display: none;">
+          <div id="user-initial" class="user-initial"></div>
+          <button id="logout-btn" class="logout-btn">Logout</button>
+        </div>
+        
+        <div id="login-form-container" style="display: none; position: absolute; top: 50px; right: 0; background: #fff; padding: 20px; width: 320px; z-index: 1000; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);">
+          <form id="login-form" action="/login" method="POST" style="display: flex; flex-direction: column; gap: 12px;">
+            <input type="text" name="username" placeholder="Username" required class="form-input" />
+            <input type="password" name="password" placeholder="Password" required class="form-input" />
+            <label style="display: flex; align-items: center; gap: 5px;">
+              <input type="checkbox" name="remember" style="width: 16px; height: 16px;" />
+              <span style="font-family: 'Montserrat', sans-serif; font-size: 14px;">Remember me</span>
+            </label>
+            <a href="/forgot-password.html" style="color: #e63946; text-decoration: none; font-family: 'Montserrat', sans-serif; font-size: 14px; text-align: right;">Forgot password?</a>
+            <button type="submit" class="form-button">Login</button>
+          </form>
+        </div>
+        
+        <div id="signup-form-container" style="display: none; position: absolute; top: 50px; right: 0; background: #fff; padding: 20px; width: 320px; z-index: 1000; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);">
+          <form id="signup-form" action="/signup" method="POST" style="display: flex; flex-direction: column; gap: 12px;">
+            <input type="text" name="username" placeholder="Username" required class="form-input" />
+            <input type="email" name="email" placeholder="Email" required class="form-input" />
+            <input type="password" name="password" placeholder="Password" required class="form-input" />
+            <input type="password" name="confirm_password" placeholder="Confirm Password" required class="form-input" />
+            <button type="submit" class="form-button">Sign Up</button>
+          </form>
+          <div style="text-align: center; margin-top: 12px;">
+            <span style="font-family: 'Montserrat', sans-serif; font-size: 14px;">Already have an account? </span>
+            <button id="switch-to-login" style="color: #e63946; text-decoration: none; font-family: 'Montserrat', sans-serif; font-size: 14px; background: none; border: none; cursor: pointer;">Login</button>
+          </div>
+        </div>
+        
+        <div class="cart-wrapper">
+          <i id="cart-box" aria-controls="cart-icon" class="uil uil-shopping-cart"></i>
+          <span id="cart-count" class="cart-count hidden">0</span>
+        </div>
+        
+        <div id="cart-icon">
+          <div class="shopping flex">
+            <p>Shopping Basket</p>
+            <i id="cross-btn" class="uil uil-times"></i>
+          </div>
+          <div class="cart-items" id="cart-items"></div>
+          <div class="cart bold-800" id="cart-content">
+            <div class="flex" id="cart-empty" style="display: flex;">
+              <i class="uil uil-shopping-cart-alt"></i>
+              <p>Cart Is Empty</p>
+            </div>
+          </div>
+          <div class="cart-total" id="cart-total">Total: $0.00</div>
+          <div class="cart-actions">
+            <button class="checkout-btn">Proceed to Checkout</button>
+          </div>
+        </div>
+      </div>
+      <div class="mobile-open-btn"><i class="uil uil-align-right"></i></div>
+    </header>
+
+    <main class="product-main">
+      <section class="single-product grid">
+        <div id="product-image-container"></div>
+        <div class="product-info grid">
+          <div class="back-link">
+            <a href="javascript:history.back()" class="fs-poppins fs-200 text-black bold-700">
+              <i class="uil uil-arrow-left"></i> Back
+            </a>
+          </div>
+          <h1 id="product-title" class="fs-poppins fs-400 bold-900"></h1>
+          <div class="star-icon flex">
+            <div>
+              <i class="uil text-red uil-star"></i>
+              <i class="uil text-red uil-star"></i>
+              <i class="uil text-red uil-star"></i>
+              <i class="uil text-red uil-star"></i>
+              <i class="uil uil-star"></i>
+            </div>
+            <div>
+              <p class="fs-montserrat fs-100">(1 customer review)</p>
+            </div>
+          </div>
+
+          <div class="price">
+            <p id="product-price" class="bold-700 fs-poppins fs-300"></p>
+          </div>
+
+          <div>
+            <p id="product-description" class="fs-montserrat lineheight">
+              There are many variations passages of Lorem Ipsum available, but the
+              majority have suffered alteration words some form by injected or
+              randomized which don’t even slightly believable. If you are going to
+              use a passage of Lorem Ipsum, you need to be sure there isn’t
+              anything
+            </p>
+          </div>
+
+          <div class="product-add-cart flex">
+            <input type="number" min="1" max="10" value="1" class="bg-gray fs-poppins" />
+            <button class="product-btn add-to-cart large-btn bg-red text-white fs-poppins fs-50">
+              Add to cart
+            </button>
+          </div>
+
+          <div>
+            <p class="fs-montserrat text-red">
+              <span class="text-black">Category: </span><span id="product-category"></span>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="product-description grid">
+        <div class="product-taps flex">
+          <a id="dis-tab" class="fs-poppins fs-200 text-black bold-700 active-tab">Description</a>
+          <a id="rev-tab" class="fs-poppins fs-200 text-black bold-700 tabs-light-text">Reviews(1)</a>
+        </div>
+
+        <div class="description grid">
+          <h3 class="text-black fs-poppins fs-300">Description</h3>
+          <p class="fs-montserrat lineheight" id="product-full-description">
+            There are many variations passages of Lorem Ipsum available, but the
+            majority have suffered alteration words some form by injectedor
+            randomized which don’t even slightly believable. If you are going to
+            use a passage of Lorem Ipsum, you need to be sure there isn’t anything
+            embarrassing hidden in the middle of text. All the Lorem Ipsum
+            generators on the Internet tend to repeat predefined chunks as
+            necessary, making this the first true generator on the Internet. It
+            uses a dictionary of over 200 Latin words, combined with a handful of
+            model sentence structures, to generate Lorem Ipsum which looks
+            reasonable. The generated Lorem Ipsum is therefore always free from
+            repetition, injected humour, or non-characteristic words etc.
+          </p>
+        </div>
+
+        <article class="reviews-container">
+          <div class="reviews">
+            <p class="text-black fs-poppins fs-200 bold-700">
+              1 review for Rockey Mountain
+            </p>
+          </div>
+          <div id="post-reviews">
+            <div id="display-reviews" class="display-reviews bg-very-light-gray flex">
+              <div>
+                <i class="uil text-black uil-user-circle"></i>
+              </div>
+              <div>
+                <div class="connent-box">
+                  <i class="uil text-red uil-star"></i>
+                  <i class="uil text-red uil-star"></i>
+                  <i class="uil text-red uil-star"></i>
+                  <i class="uil text-red uil-star"></i>
+                  <i class="uil uil-star"></i>
+                  <p class="fs-poppins fs-200">
+                    <span class="bold-700">Paul </span>- October 7, 2019
+                  </p>
+                  <p class="fs-poppins fs-200">Hello</p>
+                </div>
+                <div class="flex likes-icon">
+                  <i class="uil bg-gray uil-thumbs-up"></i>
+                  <i class="uil bg-gray uil-thumbs-down"></i>
+                  <span id="count-like" class="bg-white fs-poppins">0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid">
+            <div class="reviews">
+              <p class="text-black fs-poppins fs-200">Add a review</p>
+            </div>
+
+            <div class="give-reviews flex">
+              <div>
+                <p class="text-black fs-poppins fs-200 bold-700">Your rating *</p>
+              </div>
+              <div>
+                <i class="uil uil-star"></i>
+                <i class="uil uil-star"></i>
+                <i class="uil uil-star"></i>
+                <i class="uil uil-star"></i>
+                <i class="uil uil-star"></i>
+              </div>
+            </div>
+            <div class="message grid">
+              <p class="fs-montserrat">Your review</p>
+              <textarea type="text" rows="10" class="bg-very-light-gray fs-montserrat"></textarea>
+            </div>
+          </div>
+          <div class="review-btn flex">
+            <button id="add-connent" class="large-btn bg-red text-white fs-poppins fs-50">
+              Submit
+            </button>
+          </div>
+        </article>
+      </section>
+    </main>
+    
+    <footer>
+      <section class="brands grid">
+        <div><img src="image/br-1.png" alt="" /></div>
+        <div><img src="image/br-2.png" alt="" /></div>
+        <div><img src="image/br-3.png" alt="" /></div>
+        <div><img src="image/br-4.png" alt="" /></div>
+        <div><img src="image/br-5.png" alt="" /></div>
+      </section>
+
+      <section class="footer grid">
+        <div class="footer-logo grid">
+          <img src="image/eso.png" alt="" />
+          <p class="fs-montserrat fs-200">
+            There are many variations passages of Lorem Ipsum available, but the
+            majority have
+          </p>
+          <div class="social-media flex">
+            <a href="https://facebook.com/yourfacebook" target="_blank" rel="noopener noreferrer">
+              <i class="uil uil-facebook-f"></i>
+            </a>
+            <a href="https://instagram.com/yourinstagram" target="_blank" rel="noopener noreferrer">
+              <i class="uil uil-instagram"></i>
+            </a>
+            <a href="https://linkedin.com/yourlinkedin" target="_blank" rel="noopener noreferrer">
+              <i class="uil uil-linkedin"></i>
+            </a>
+            <a href="https://twitter.com/yourtwitter" target="_blank" rel="noopener noreferrer">
+              <i class="uil uil-twitter"></i>
+            </a>
+          </div>
+        </div>
+
+        <div class="footer-menu grid">
+          <h3 class="fs-poppins fs-200 bold-800">Quick Links</h3>
+          <ul>
+            <li><a class="fs-montserrat text-black fs-200" href="#">Home</a></li>
+            <li><a class="fs-montserrat text-black fs-200" href="#">About</a></li>
+            <li><a class="fs-montserrat text-black fs-200" href="#">Shop</a></li>
+            <li><a class="fs-montserrat text-black fs-200" href="#">Contact</a></li>
+          </ul>
+        </div>
+
+        <div class="contact grid">
+          <h3 class="fs-poppins fs-200 bold-800">Contact</h3>
+          <p class="fs-montserrat">
+            +99 (0) 101 0000 888 Patricia C. Amedee 4401 Waldeck Street
+            Grapevine Nashville, Tx 76051
+          </p>
+        </div>
+
+        <div class="emails grid">
+          <h3 class="fs-poppins fs-200 bold-800">Subscribe To Our Email</h3>
+          <p class="updates fs-poppins fs-300 bold-800">
+            For Latest News & Updates
+          </p>
+          <div class="inputField flex bg-gray">
+            <input type="email" placeholder="Enter Your Email" class="fs-montserrat bg-gray" />
+            <button class="bg-red text-white fs-poppins fs-50">Subscribe</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="copyRight">
+        <p class="c-font fs-montserrat fs-200">© 2022 eStore. All rights reserved.</p>
+        <p class="fs-montserrat fs-100 text-align p-top">Privacy Policy . Term Condition</p>
+      </section>
+    </footer>
+  </body>
+</html>
