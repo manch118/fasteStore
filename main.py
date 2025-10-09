@@ -124,13 +124,15 @@ async def startup():
         if not ADMIN_EMAIL or not ADMIN_PASSWORD:
             logger.warning("SMTP credentials not configured - email sending may fail")
         
-        redis_instance = redis.from_url("redis://localhost", encoding="utf-8", decode_responses=True)
+        # Подключение к Redis через переменные окружения
+        REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
+        redis_instance = redis.from_url(REDIS_URL, encoding="utf-8", decode_responses=True)
         await redis_instance.ping()
-        logger.info("Redis подключен успешно")
+        logger.info("✅ Redis подключен успешно")
         await FastAPILimiter.init(redis_instance)
     except Exception as e:
-        logger.error(f"Ошибка при старте: {e}")
-        raise
+        logger.error(f" Ошибка при старте: {e}")
+        raise e
 
 # Модели
 class ContactForm(BaseModel):
