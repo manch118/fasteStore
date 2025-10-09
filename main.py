@@ -74,7 +74,7 @@ app.include_router(auth_router)
 # Настройка CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:8000", "https://6fd76344c1ed.ngrok-free.app"],
+    allow_origins=["https://fastestore.onrender.com", "https://fastestore.onrender.com/"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -357,7 +357,7 @@ async def send_newsletter(form_data: NewsletterForm):
             <body>
                 <h2>{form_data.subject}</h2>
                 <p>{form_data.content}</p>
-                <p><a href="http://localhost:8000">Посетите наш магазин</a></p>
+                <p><a href="https://fastestore.onrender.com">Посетите наш магазин</a></p>
                 <p><small>Отписаться: {{unsubscribe}}</small></p>
             </body>
         </html>
@@ -845,7 +845,7 @@ async def forgot_password(
         logger.info(f"Sending reset email to: {form_data.email}")
         
         # Use your ngrok domain or localhost for reset link
-        RESET_URL = f"https://0ec4a198cafc.ngrok-free.app/reset-password?token={reset_token}"
+        RESET_URL = f"https://fastestore.onrender.com/reset-password?token={reset_token}"
         
         subject = "Password Reset for eStore"
         body = f"""
@@ -1000,8 +1000,8 @@ async def create_paypal_order(
                 "description": f"Order #{order.id} from eStore"
             }],
             "application_context": {
-                "return_url": f"https://6fd76344c1ed.ngrok-free.app/api/capture-paypal-order?order_id={order.id}",  # Замени на ngrok или домен
-                "cancel_url": f"https://6fd76344c1ed.ngrok-free.app/cart"  # На корзину при отмене
+                "return_url": f"https://fastestore.onrender.com/api/capture-paypal-order?order_id={order.id}",  # Замени на ngrok или домен
+                "cancel_url": f"https://fastestore.onrender.com/cart"  # На корзину при отмене
             }
         }
         logger.info(f"Creating PayPal order at: {paypal_url}")
@@ -1059,7 +1059,7 @@ async def capture_paypal_order(
 
         # Перенаправляем на success страницу
         logger.info(f"PayPal order {order_id} captured successfully")
-        return RedirectResponse(url=f"https://6fd76344c1ed.ngrok-free.app/order-success?order_id={order_id}", status_code=303)
+        return RedirectResponse(url=f"https://fastestore.onrender.com/order-success?order_id={order_id}", status_code=303)
 
     except Exception as e:
         logger.error(f"Capture PayPal order error: {e}")
