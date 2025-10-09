@@ -3,12 +3,9 @@ from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi_limiter import FastAPILimiter
-from fastapi_limiter.depends import RateLimiter
 from pydantic import BaseModel, EmailStr
 from datetime import datetime, timedelta
 from typing import List, Optional
-import redis.asyncio as redis
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -107,12 +104,8 @@ ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
 def allowed_file(filename: str) -> bool:
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# Инициализация Redis
-redis_instance = None
-
 @app.on_event("startup")
 async def startup():
-    global redis_instance
     try:
         logger.info(f"API Key: {GETRESPONSE_API_KEY}")
         logger.info(f"List ID: {GETRESPONSE_LIST_ID}")
@@ -124,16 +117,12 @@ async def startup():
         if not ADMIN_EMAIL or not ADMIN_PASSWORD:
             logger.warning("SMTP credentials not configured - email sending may fail")
         
-        # Подключение к Redis через переменные окружения
-        REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
-        redis_instance = redis.from_url(REDIS_URL, encoding="utf-8", decode_responses=True)
-        await redis_instance.ping()
-        logger.info("✅ Redis подключен успешно")
-        await FastAPILimiter.init(redis_instance)
+        # Rate limiting отключён (Redis не используется)
+        logger.info("Rate limiting отключён")
+        
     except Exception as e:
-        logger.error(f" Ошибка при старте: {e}")
-        raise e
-
+        logger.error(f"Ошибка при старте: {e}")
+        raise
 # Модели
 class ContactForm(BaseModel):
     email: str
@@ -312,7 +301,7 @@ async def contact_submit(form_data: ContactForm):
         logger.error(f"Error sending email: {e}")
         raise HTTPException(status_code=500, detail=f"Ошибка при отправке сообщения: {str(e)}")
 
-@app.post("/subscribe", dependencies=[Depends(RateLimiter(times=5, seconds=60))])
+@app.post("/subscribe")
 async def subscribe(form_data: SubscribeForm):
     try:
         url = "https://api.getresponse.com/v3/contacts"
@@ -354,7 +343,7 @@ async def subscribe(form_data: SubscribeForm):
         logger.error(f"General error: {e}")
         raise HTTPException(status_code=500, detail=f"Попробуйте позже: {str(e)}")
 
-@app.post("/send-newsletter", dependencies=[Depends(RateLimiter(times=5, seconds=60))])
+@app.post("/send-newsletter")
 async def send_newsletter(form_data: NewsletterForm):
     try:
         url = "https://api.getresponse.com/v3/newsletters"
