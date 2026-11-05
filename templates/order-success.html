@@ -1,1 +1,35 @@
-<i>thanks for pay</i>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>eStore - Order Confirmed</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/indexo.css" />
+    <link rel="stylesheet" href="/css/modern.css" />
+  </head>
+  <body class="auth-shell">
+    <div class="background-layer"></div>
+    <div class="reset-password-container">
+      <div class="logo">
+        <img src="/image/eso.png" alt="eStore logo" />
+      </div>
+      <h1>Order confirmed</h1>
+      <p>Your payment went through and the order is now marked as paid.</p>
+
+      <div class="display-reviews" style="padding: 24px; margin: 28px 0 12px;">
+        <div class="connent-box">
+          <p class="fs-poppins fs-200 bold-700">Order #{{ order.id }}</p>
+          <p class="fs-montserrat" style="margin-top: 10px;">Status: {{ order.status|capitalize }}</p>
+          <p class="fs-montserrat" style="margin-top: 6px;">Total: ${{ '%.2f'|format(order.total) }}</p>
+        </div>
+      </div>
+
+      <a href="/shop.html" class="back-link">Continue shopping</a>
+      <a href="/index.html" class="back-link">Go to homepage</a>
+    </div>
+  </body>
+</html>

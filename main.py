@@ -95,6 +95,11 @@ GETRESPONSE_API_KEY = os.getenv("GETRESPONSE_API_KEY")
 GETRESPONSE_LIST_ID = os.getenv("GETRESPONSE_LIST_ID")
 GETRESPONSE_FROM_FIELD_ID = os.getenv("GETRESPONSE_FROM_FIELD_ID")
 
+if not all([GETRESPONSE_API_KEY, GETRESPONSE_LIST_ID, GETRESPONSE_FROM_FIELD_ID]):
+    GETRESPONSE_API_KEY = GETRESPONSE_API_KEY or "__DISABLED__"
+    GETRESPONSE_LIST_ID = GETRESPONSE_LIST_ID or "__DISABLED__"
+    GETRESPONSE_FROM_FIELD_ID = GETRESPONSE_FROM_FIELD_ID or "__DISABLED__"
+
 # Настройка директории для загрузки файлов
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
 # Создаем папку, если её нет
@@ -104,13 +109,21 @@ ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
 def allowed_file(filename: str) -> bool:
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def getresponse_configured() -> bool:
+    return all(
+        value and value != "__DISABLED__"
+        for value in [GETRESPONSE_API_KEY, GETRESPONSE_LIST_ID, GETRESPONSE_FROM_FIELD_ID]
+    )
+
 @app.on_event("startup")
 async def startup():
     try:
         logger.info(f"API Key: {GETRESPONSE_API_KEY}")
         logger.info(f"List ID: {GETRESPONSE_LIST_ID}")
         logger.info(f"From Field ID: {GETRESPONSE_FROM_FIELD_ID}")
-        if not all([GETRESPONSE_API_KEY, GETRESPONSE_LIST_ID, GETRESPONSE_FROM_FIELD_ID]):
+        if not getresponse_configured():
+            logger.warning("GetResponse not configured - subscribe and newsletter features will be unavailable")
+        if False and not getresponse_configured():
             raise ValueError("Одна или несколько переменных окружения GetResponse отсутствуют")
         
         # Проверка SMTP
@@ -304,6 +317,9 @@ async def contact_submit(form_data: ContactForm):
 @app.post("/subscribe")
 async def subscribe(form_data: SubscribeForm):
     try:
+        if not getresponse_configured():
+            raise HTTPException(status_code=503, detail="Подписка временно недоступна: GetResponse не настроен")
+
         url = "https://api.getresponse.com/v3/contacts"
         headers = {
             "X-Auth-Token": f"api-key {GETRESPONSE_API_KEY}",
@@ -346,6 +362,9 @@ async def subscribe(form_data: SubscribeForm):
 @app.post("/send-newsletter")
 async def send_newsletter(form_data: NewsletterForm):
     try:
+        if not getresponse_configured():
+            raise HTTPException(status_code=503, detail="Рассылка временно недоступна: GetResponse не настроен")
+
         url = "https://api.getresponse.com/v3/newsletters"
         headers = {
             "X-Auth-Token": f"api-key {GETRESPONSE_API_KEY}",

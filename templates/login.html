@@ -1,15 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Login Page</title>
-</head>
-<body>
-  <h2>Login</h2>
-  <form action="/login" method="post">
-    <input type="text" name="username" placeholder="Username" required><br><br>
-    <input type="password" name="password" placeholder="Password" required><br><br>
-    <button type="submit">Login</button>
-  </form>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>eStore - Login</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/indexo.css" />
+    <link rel="stylesheet" href="/css/modern.css" />
+  </head>
+  <body class="auth-shell">
+    <div class="background-layer"></div>
+    <div class="forgot-password-container">
+      <div class="logo">
+        <img src="/image/eso.png" alt="eStore logo" />
+      </div>
+      <h1>Welcome back</h1>
+      <p>Log in to continue shopping, manage orders, and finish checkout faster.</p>
+
+      <form action="/login" method="post">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input id="username" class="form-input" type="text" name="username" placeholder="Your username" required />
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input id="password" class="form-input" type="password" name="password" placeholder="Your password" required />
+        </div>
+        <div class="form-group" style="margin-top: -8px;">
+          <label style="display: flex; align-items: center; gap: 10px; text-transform: none;">
+            <input type="checkbox" name="remember" style="width: 16px; height: 16px;" />
+            <span>Remember me</span>
+          </label>
+        </div>
+        <button class="form-button" type="submit">Login</button>
+      </form>
+
+      <a href="/forgot-password.html" class="back-link">Forgot your password?</a>
+      <a href="/signup.html" class="back-link">Need an account? Create one</a>
+      <a href="/index.html" class="back-link">Back to storefront</a>
+    </div>
+  </body>
 </html>

@@ -10,6 +10,7 @@
     />
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
     <link rel="stylesheet" href="/css/indexo.css" />
+    <link rel="stylesheet" href="/css/modern.css" />
     <title>eStore - Home</title>
     <style>
       /* Встроенные стили для уведомлений и корзины */
@@ -549,8 +550,9 @@
           <div class="cart-actions">
             <button class="checkout-btn">Proceed to Checkout</button>
           </div>
-        <div class="mobile-open-btn"><i class="uil uil-align-right"></i></div>
+        </div>
       </div>
+      <div class="mobile-open-btn"><i class="uil uil-align-right"></i></div>
     </header>
     <main class="hero-section">
       <div>
@@ -779,48 +781,6 @@
         </p>
       </section>
     </footer>
-    
-    <div class="cart-overlay" id="cart-overlay"></div>
-    <div class="cart-wrapper grid text-black" id="cart-icon">
-      <div class="flex">
-        <p class="fs-poppins bold-800">Shopping Cart</p>
-        <span class="cross-btn" id="cross-btn">&times;</span>
-      </div>
-      <div class="cart-items" id="cart-items" style="display: none;">
-        </div>
-      <div class="cart-empty" id="cart-empty" style="display: none;">
-        <p class="fs-poppins">Your cart is empty</p>
-      </div>
-      <p class="cart-total text-red" id="cart-total" style="display: none;">Total: $0.00</p>
-      <button class="bg-red text-white checkout-btn">Checkout</button>
-    </div>
-
-    <div class="auth-form-container" id="login-form-container" style="display: none;">
-      <form class="auth-form" id="login-form">
-        <label for="login-username">Username</label>
-        <input type="text" id="login-username" name="username" required />
-        <label for="login-password">Password</label>
-        <input type="password" id="login-password" name="password" required />
-        <button type="submit">Login</button>
-      </form>
-    </div>
-
-    <div class="auth-form-container" id="signup-form-container" style="display: none;">
-      <form class="auth-form" id="signup-form">
-        <label for="signup-username">Username</label>
-        <input type="text" id="signup-username" name="username" required />
-        <label for="signup-email">Email</label>
-        <input type="email" id="signup-email" name="email" required />
-        <label for="signup-password">Password</label>
-        <input type="password" id="signup-password" name="password" required />
-        <label for="confirm-password">Confirm Password</label>
-        <input type="password" id="confirm-password" name="confirm_password" required />
-        <button type="submit">Sign Up</button>
-        <p class="switch-link">
-          Already have an account? <span id="switch-to-login">Login</span>
-        </p>
-      </form>
-    </div>
     <script src="/js/indexo.js" defer></script>
     <script src="/js/shopo.js" defer></script>
     <script>
